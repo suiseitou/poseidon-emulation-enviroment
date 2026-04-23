@@ -44,9 +44,12 @@ jobs:
       - name: Build
         run: cmake --build build
 
+      - name: List build output
+        run: ls -la build/
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: poseidon-linux
-          path: build/poseidon
+          path: build/
           retention-days: 7
