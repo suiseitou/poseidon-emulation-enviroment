@@ -1,0 +1,52 @@
+name: Build Linux Release
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  build-linux:
+    if: >
+      ${{ github.event.issue.pull_request != null &&
+      contains(github.event.comment.body, '/build-linux') }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check commenter is collaborator
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/collaborators/${{ github.event.comment.user.login }} \
+            --silent || (echo "Not a collaborator" && exit 1)
+
+      - name: Get PR branch
+        uses: xt0rted/pull-request-comment-branch@v2
+        id: comment-branch
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.comment-branch.outputs.head_ref }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            ninja-build \
+            libgl1-mesa-dev \
+            qt6-base-dev \
+            qt6-tools-dev \
+            cmake
+
+      - name: Configure
+        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: poseidon-linux
+          path: build/poseidon
+          retention-days: 7
