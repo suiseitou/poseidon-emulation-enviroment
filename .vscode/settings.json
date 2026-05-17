@@ -1,0 +1,6 @@
+{
+    "cmake.generator": "Ninja",
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/g++.exe",
+    "cmake.configureArgs": ["-DCMAKE_PREFIX_PATH=C:/msys64/ucrt64"]
+}
